@@ -14,9 +14,9 @@ using namespace std;
 double l2_norm(vector<double> const& u) {
     double accum = 0.;
     for (int i = 0; i < u.size(); ++i) {
-        accum += u[i] * u[i];
+        accum += u[i]*u[i];
     }
-    return sqrt(accum);
+    return sqrt(accum/u.size());
 }
 
 double V(double y, double b){
@@ -26,7 +26,7 @@ double V(double y, double b){
 int main(int argc, char* argv[]){
 
 //Algorithm parameters
-  double L = 500;
+  double L = 2e4;
   double epsilon = 1e-2;
 
 // Problem parameters
@@ -68,8 +68,8 @@ int main(int argc, char* argv[]){
   //f and u_solution
   for (int i = 0; i<Nx+2;i++){
     for (int j=0; j<Ny+2;j++){
-      f[i + (Nx+2)*j] = -2*M_PI*M_PI*cos(M_PI*i*dx)*sin(M_PI*j*dy);
-      u_solution[i + (Nx+2)*j] = cos(M_PI*i*dx)*sin(M_PI*j*dy);
+      f[i + (Nx+2)*j] = -8*M_PI*M_PI*sin(2*M_PI*i*dx)*sin(2*M_PI*j*dy);
+      u_solution[i + (Nx+2)*j] = sin(2*M_PI*i*dx)*sin(2*M_PI*j*dy); // u = sin(2*pi*x)sin(2*pi*y)
     }
   }
 
@@ -90,23 +90,53 @@ int main(int argc, char* argv[]){
 
   //Initiallization
   int l = 0;
-  double res = MAXFLOAT;
+  vector<double> res((Nx+2)*(Ny+2));
+  double n_res = MAXFLOAT;
+  double n_res_0 = MAXFLOAT;
 
-  //Loop
-  while((l<=L)&&(res > epsilon)){
+  // Loop
+
+    // l = 0
+  while (l < 1){
+    // Spatial loop
+    for (int i=1; i<=Nx; i++){
+        for (int j=1; j<=Ny; j++){
+            solNew[i+(Nx+2)*j + 1] = coeff * ((sol[i+1+(Nx+2)*j+1]+sol[i-1+(Nx+2)*j + 1])/(dx*dx) + (sol[i+(Nx+2)*(j+1) + 1]+sol[i+(Nx+2)*(j-1) + 1])/(dy*dy) - f[i + (Nx+2)*j + 1]);     
+        }
+    }
+    // Swap pointers
+    sol.swap(solNew);
+    
+    //Residu
+    for (int i = 0; i < (Nx+2)*(Ny+2); i++){
+      res[i] = sol[i] - solNew[i];
+    }
+    n_res_0 = l2_norm(res);
+
+    //Incrementation
+    ++l;
+  }
+
+    // l > 1
+  while((l<=L)&&(n_res/n_res_0 > epsilon)){
     
     // Spatial loop
     for (int i=1; i<=Nx; i++){
         for (int j=1; j<=Ny; j++){
-            solNew[i+(Nx+2)*j + 1] = coeff * ((sol[i+1+(Nx+2)*j+1]+sol[i-1+(Nx+2)*j + 1])/(dx*dx) + (sol[i+(Nx+2)*(j+1) + 1]+sol[i+(Nx+2)*(j-1) + 1])/(dy*dy) - f[i + (Nx+2)*j + 1]);
+            solNew[i+(Nx+2)*j + 1] = coeff * ((sol[i+1+(Nx+2)*j+1]+sol[i-1+(Nx+2)*j + 1])/(dx*dx) + (sol[i+(Nx+2)*(j+1) + 1]+sol[i+(Nx+2)*(j-1) + 1])/(dy*dy) - f[i + (Nx+2)*j + 1]);     
         }
     }
 
     // Swap pointers
     sol.swap(solNew);
     
+    //Residu
+    for (int i = 0; i < (Nx+2)*(Ny+2); i++){
+      res[i] = sol[i] - solNew[i];
+    }
+    n_res = l2_norm(res);
+
     //Incrementation
-    //res = 
     ++l;
   }
 
@@ -137,9 +167,25 @@ int main(int argc, char* argv[]){
     }
 
     //Print
-    cout << "Norm of the solution:   " << l2_norm(sol) << endl;
-    cout << "Norm of expected solution:   " << l2_norm(u_solution) << endl;
-    cout << "Absolute error: " << l2_norm(err) << endl;
+    cout << "***** Printing the solution *****" <<endl;
+
+    //finding out why the program stopped
+    if (l > L){
+      cout << "Program stopped beacause l > L" << endl;
+    }
+
+    else {
+      cout << "Program stopped because the residual value =" << n_res/n_res_0 << endl;
+    }
+
+    //cout << "- Norm of the solution:   " << l2_norm(sol) << endl;
+    //cout << "- Norm of the expected solution:   " << l2_norm(u_solution) << endl;
+
+    cout << "- Absolute error: " << l2_norm(err) << endl;
+
+    cout << "- Norm of the residual value: " << n_res/n_res_0 << endl;
+
+    cout << "********************************" <<endl;
 
     //File
     ofstream file;

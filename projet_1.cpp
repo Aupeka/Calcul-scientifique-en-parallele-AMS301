@@ -26,16 +26,16 @@ double V(double y, double b){
 int main(int argc, char* argv[]){
 
 //Algorithm parameters
-  double L = 2e4;
-  double epsilon = 1e-2;
+  double L = 1e4;
+  double epsilon = 1e-4;
 
 // Problem parameters
   double a = 1.;
   double b = 1.;
   double alpha = 0.5;
-  double U_0 = 1;
-  int Nx = 50;
-  int Ny = 50;
+  double U_0 = 0;
+  int Nx = 150;
+  int Ny = 150;
 
 //Coefficients
   double dx = a/(Nx+1);

@@ -25,45 +25,51 @@ double V(double y, double b){
 
 int main(int argc, char* argv[]){
 
+//Algorithm parameters
+  double L = 500;
+  double epsilon = 1e-2;
+
 // Problem parameters
   double a = 1.;
   double b = 1.;
   double alpha = 0.5;
   double U_0 = 1;
+  int Nx = 50;
+  int Ny = 50;
 
-  double L = 1e5;
-  int Nx = 18;
-  int Ny = 18;
-
+//Coefficients
   double dx = a/(Nx+1);
   double dy = b/(Ny+1);
-
-  double coeff = (pow(dx,2) * pow(dy,2))/(2*(pow(dx,2) + pow(dy,2)));
+  double coeff = (dx*dx*dy*dy)/(2*(dx*dx + dy*dy));
 
 // Memory allocation + Initial solution + Boundary conditions
   vector<double> f((Nx+2)*(Ny+2));
   vector<double> sol((Nx+2)*(Ny+2));
   vector<double> solNew((Nx+2)*(Ny+2));
 
-  vector<double> u_solution((Nx+2)*(Ny+2)); //Validation
-
-  //IC
+//IC
   for (int i=0; i < (Nx+2)*(Ny+2); i++){
     sol[i] = U_0;
   }
 
   /*
   //LC, of problem
-  for (int j = 0; j < Ny+1; j++){
-    sol[0 + Nx*j] = U_0*(1+alpha*V(Nx*j,b));
+  for (int j = 0; j < Ny+2; j++){
+    sol[0 + (Nx+2)*j] = U_0*(1+alpha*V((Nx+2)*j,b));
   }
   */
 
-  //f, for validation
+
+  /* Validation process - begin*/
+
+  //Memory allocation
+  vector<double> u_solution((Nx+2)*(Ny+2));
+  
+  //f and u_solution
   for (int i = 0; i<Nx+2;i++){
     for (int j=0; j<Ny+2;j++){
-      f[i + (Nx+2)*j] = -2*pow(M_PI,2)*cos(M_PI*i)*sin(M_PI*j);
-      u_solution[i + (Nx+2)*j] = cos(M_PI*i)*sin(M_PI*j);
+      f[i + (Nx+2)*j] = -2*M_PI*M_PI*cos(M_PI*i*dx)*sin(M_PI*j*dy);
+      u_solution[i + (Nx+2)*j] = cos(M_PI*i*dx)*sin(M_PI*j*dy);
     }
   }
 
@@ -77,22 +83,37 @@ int main(int argc, char* argv[]){
     sol[i + (Nx+2)*(Ny+1)] = u_solution[i + (Nx+2)*(Ny+1)];
   }
 
-  // Time loop
-  for (int l=1; l<=L; l++){
+  /* Validation process - end */
+
+
+  /* Time loop - begin*/
+
+  //Initiallization
+  int l = 0;
+  double res = MAXFLOAT;
+
+  //Loop
+  while((l<=L)&&(res > epsilon)){
     
     // Spatial loop
     for (int i=1; i<=Nx; i++){
         for (int j=1; j<=Ny; j++){
-            solNew[i+(Nx+2)*j + 1] = coeff * ((sol[i+1+(Nx+2)*j +1]+sol[i-1+(Nx+2)*j + 1])/pow(dx,2) + (sol[i+(Nx+2)*(j+1) + 1]+sol[i+(Nx+2)*(j-1) + 1])/pow(dy,2) - f[i + (Nx+2)*j]);
+            solNew[i+(Nx+2)*j + 1] = coeff * ((sol[i+1+(Nx+2)*j+1]+sol[i-1+(Nx+2)*j + 1])/(dx*dx) + (sol[i+(Nx+2)*(j+1) + 1]+sol[i+(Nx+2)*(j-1) + 1])/(dy*dy) - f[i + (Nx+2)*j + 1]);
         }
     }
 
     // Swap pointers
     sol.swap(solNew);
+    
+    //Incrementation
+    //res = 
+    ++l;
   }
 
+  /* Time loop - end */
 
-  // Print solution
+
+  /* Solution display - begin */
 
   //Def of pos
   vector<double> pos_x((Nx+2));
@@ -106,26 +127,31 @@ int main(int argc, char* argv[]){
     pos_y[j] = j*dy;
   }
 
-  //Print
-  ofstream file;
-  file.open("Jacobi.txt");
-  for (int i=0; i<=Nx+2; i++){
-        for (int j=0; j<=Ny+2; j++){
-          file << pos_x[i] << ";" << pos_y[j] << ";" << sol[i + Nx*j] <<endl;
-    }
-  }
-  file.close();
-
-
   // Show results
-  cout << "Final result:   " << l2_norm(sol) << endl;
-  cout << "Norm of sol_th:   " << l2_norm(u_solution) << endl;
+  
     //Absolute error 
     vector<double> err((Nx+2)*(Ny+2));
-    for (int i = 0; i < Nx*Ny; i++){
+    
+    for (int i = 0; i < (Nx+2)*(Ny+2); i++){
       err[i] = sol[i] - u_solution[i];
     }
-  cout << "Absolute error: " << l2_norm(err) << endl;
+
+    //Print
+    cout << "Norm of the solution:   " << l2_norm(sol) << endl;
+    cout << "Norm of expected solution:   " << l2_norm(u_solution) << endl;
+    cout << "Absolute error: " << l2_norm(err) << endl;
+
+    //File
+    ofstream file;
+    file.open("Jacobi.dat");
+    for (int i=0; i<=Nx+2; i++){
+          for (int j=0; j<=Ny+2; j++){
+            file << pos_x[i] << ";" << pos_y[j] << ";" << sol[i + Nx*j] <<endl;
+      }
+    }
+    file.close();
+
+  /* Solution display - end */
 
   return 0;
 }

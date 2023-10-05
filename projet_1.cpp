@@ -26,16 +26,16 @@ double V(double y, double b){
 int main(int argc, char* argv[]){
 
 //Algorithm parameters
-  double L = 1e4;
-  double epsilon = 1e-4;
+  double L = 1e6;
+  double epsilon = 1e-6;
 
 // Problem parameters
   double a = 1.;
   double b = 1.;
   double alpha = 0.5;
   double U_0 = 0;
-  int Nx = 150;
-  int Ny = 150;
+  int Nx = 60;
+  int Ny = 60;
 
 //Coefficients
   double dx = a/(Nx+1);
@@ -62,6 +62,8 @@ int main(int argc, char* argv[]){
 
   /* Validation process - begin*/
 
+  //Validation for u = sin(2*pi*x)sin(2*pi*y)
+  
   //Memory allocation
   vector<double> u_solution((Nx+2)*(Ny+2));
   
@@ -69,18 +71,18 @@ int main(int argc, char* argv[]){
   for (int i = 0; i<Nx+2;i++){
     for (int j=0; j<Ny+2;j++){
       f[i + (Nx+2)*j] = -8*M_PI*M_PI*sin(2*M_PI*i*dx)*sin(2*M_PI*j*dy);
-      u_solution[i + (Nx+2)*j] = sin(2*M_PI*i*dx)*sin(2*M_PI*j*dy); // u = sin(2*pi*x)sin(2*pi*y)
+      u_solution[i + (Nx+2)*j] = sin(2*M_PI*i*dx)*sin(2*M_PI*j*dy);
     }
   }
 
   // LC, for validation
   for (int j = 0; j < Ny+2; j++){
-    sol[0 + (Nx+1)*j] = u_solution[0 + (Nx+1)*j];
-    sol[Nx+2 + (Nx+1)*j] = u_solution[Nx+2 + (Nx+1)*j];
+    sol[0 + (Nx+2)*j] = u_solution[0 + (Nx+2)*j];
+    sol[Nx+2 + (Nx+2)*j] = u_solution[Nx+2 + (Nx+2)*j];
   }
   for (int i = 0; i <Nx+2; i++){
     sol[i] = u_solution[i];
-    sol[i + (Nx+2)*(Ny+1)] = u_solution[i + (Nx+2)*(Ny+1)];
+    sol[i + (Nx+2)*(Ny+2)] = u_solution[i + (Nx+2)*(Ny+2)];
   }
 
   /* Validation process - end */
@@ -189,7 +191,7 @@ int main(int argc, char* argv[]){
 
     //File
     ofstream file;
-    file.open("Jacobi.dat");
+    file.open("Jacobi.txt");
     for (int i=0; i<=Nx+2; i++){
           for (int j=0; j<=Ny+2; j++){
             file << pos_x[i] << ";" << pos_y[j] << ";" << sol[i + Nx*j] <<endl;

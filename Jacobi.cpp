@@ -1,5 +1,5 @@
 // Compilation:
-//   g++ projet_1.cpp
+//   g++ Jacobi.cpp
 // Execution:
 //   ./a.out
 
@@ -26,16 +26,16 @@ double V(double y, double b){
 int main(int argc, char* argv[]){
 
 //Algorithm parameters
-  double L = 1e6;
-  double epsilon = 1e-6;
+  double L = 1e5;
+  double epsilon = 1e-5;
 
 // Problem parameters
   double a = 1.;
   double b = 1.;
   double alpha = 0.5;
   double U_0 = 0;
-  int Nx = 60;
-  int Ny = 60;
+  int Nx = 30;
+  int Ny = 30;
 
 //Coefficients
   double dx = a/(Nx+1);
@@ -48,41 +48,33 @@ int main(int argc, char* argv[]){
   vector<double> solNew((Nx+2)*(Ny+2));
 
 //IC
+
   for (int i=0; i < (Nx+2)*(Ny+2); i++){
     sol[i] = U_0;
+    f[i] = 0.; //Nulle dans notre cas
   }
 
-  /*
-  //LC, of problem
+  
+//LC, of problem
   for (int j = 0; j < Ny+2; j++){
-    sol[0 + (Nx+2)*j] = U_0*(1+alpha*V((Nx+2)*j,b));
+    sol[0 + (Nx+2)*j] = U_0*(1+alpha*V((Nx+2)*j*dy,b));
   }
-  */
-
+  
 
   /* Validation process - begin*/
 
+  
   //Validation for u = sin(2*pi*x)sin(2*pi*y)
   
   //Memory allocation
-  vector<double> u_solution((Nx+2)*(Ny+2));
+  vector<double> sol_th((Nx+2)*(Ny+2));
   
   //f and u_solution
   for (int i = 0; i<Nx+2;i++){
     for (int j=0; j<Ny+2;j++){
       f[i + (Nx+2)*j] = -8*M_PI*M_PI*sin(2*M_PI*i*dx)*sin(2*M_PI*j*dy);
-      u_solution[i + (Nx+2)*j] = sin(2*M_PI*i*dx)*sin(2*M_PI*j*dy);
+      sol_th[i + (Nx+2)*j] = sin(2*M_PI*i*dx)*sin(2*M_PI*j*dy);
     }
-  }
-
-  // LC, for validation
-  for (int j = 0; j < Ny+2; j++){
-    sol[0 + (Nx+2)*j] = u_solution[0 + (Nx+2)*j];
-    sol[Nx+2 + (Nx+2)*j] = u_solution[Nx+2 + (Nx+2)*j];
-  }
-  for (int i = 0; i <Nx+2; i++){
-    sol[i] = u_solution[i];
-    sol[i + (Nx+2)*(Ny+2)] = u_solution[i + (Nx+2)*(Ny+2)];
   }
 
   /* Validation process - end */
@@ -116,7 +108,7 @@ int main(int argc, char* argv[]){
     n_res_0 = l2_norm(res);
 
     //Incrementation
-    ++l;
+    l++;
   }
 
     // l > 1
@@ -137,7 +129,7 @@ int main(int argc, char* argv[]){
       res[i] = sol[i] - solNew[i];
     }
     n_res = l2_norm(res);
-
+    
     //Incrementation
     ++l;
   }
@@ -165,23 +157,21 @@ int main(int argc, char* argv[]){
     vector<double> err((Nx+2)*(Ny+2));
     
     for (int i = 0; i < (Nx+2)*(Ny+2); i++){
-      err[i] = sol[i] - u_solution[i];
+      err[i] = sol[i] - sol_th[i];
     }
+    
 
     //Print
     cout << "***** Printing the solution *****" <<endl;
 
     //finding out why the program stopped
     if (l > L){
-      cout << "Program stopped beacause l > L" << endl;
+      cout << "Program stopped beacause l = " << l << "> L" << endl;
     }
 
     else {
-      cout << "Program stopped because the residual value =" << n_res/n_res_0 << endl;
+      cout << "Program stopped because the residual value = " << n_res/n_res_0 << "< "<< epsilon << endl;
     }
-
-    //cout << "- Norm of the solution:   " << l2_norm(sol) << endl;
-    //cout << "- Norm of the expected solution:   " << l2_norm(u_solution) << endl;
 
     cout << "- Absolute error: " << l2_norm(err) << endl;
 
@@ -191,7 +181,7 @@ int main(int argc, char* argv[]){
 
     //File
     ofstream file;
-    file.open("Jacobi.txt");
+    file.open("Jacobi.dat");
     for (int i=0; i<=Nx+2; i++){
           for (int j=0; j<=Ny+2; j++){
             file << pos_x[i] << ";" << pos_y[j] << ";" << sol[i + Nx*j] <<endl;

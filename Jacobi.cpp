@@ -9,6 +9,7 @@
 #include <fstream>
 #include <cmath>
 #include <vector>
+#include <chrono>
 using namespace std;
 
 double l2_norm(vector<double> const& u) {
@@ -26,7 +27,7 @@ double V(double y, double b){
 int main(int argc, char* argv[]){
 
 //Algorithm parameters
-  double L = 1e5;
+  double L = 1e6;
   double epsilon = 1e-5;
 
 // Problem parameters
@@ -34,8 +35,8 @@ int main(int argc, char* argv[]){
   double b = 1.;
   double alpha = 0.5;
   double U_0 = 0;
-  int Nx = 30;
-  int Ny = 30;
+  int Nx = 60;
+  int Ny = 60;
 
 //Coefficients
   double dx = a/(Nx+1);
@@ -111,6 +112,9 @@ int main(int argc, char* argv[]){
     l++;
   }
 
+  // timeInit
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
     // l > 1
   while((l<=L)&&(n_res/n_res_0 > epsilon)){
     
@@ -133,6 +137,9 @@ int main(int argc, char* argv[]){
     //Incrementation
     ++l;
   }
+
+  // timeEnd
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
   /* Time loop - end */
 
@@ -162,7 +169,9 @@ int main(int argc, char* argv[]){
     
 
     //Print
-    cout << "***** Printing the solution *****" <<endl;
+    cout << "***** Printing Jacobi's solution *****" <<endl;
+
+    cout << "Runtime: " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count())/100 << "[ms]"<< endl;
 
     //finding out why the program stopped
     if (l > L){
@@ -170,10 +179,10 @@ int main(int argc, char* argv[]){
     }
 
     else {
-      cout << "Program stopped because the residual value = " << n_res/n_res_0 << "< "<< epsilon << endl;
+      cout << "Program stopped because the residual value = " << n_res/n_res_0 << "< "<< epsilon << " where res_0 = " << n_res_0 << "and l = " << l << endl;
     }
 
-    cout << "- Absolute error: " << l2_norm(err) << endl;
+    cout << "- Absolute error: " << l2_norm(err) << " for h = " << 1/sqrt(Nx*Ny) << endl;
 
     cout << "- Norm of the residual value: " << n_res/n_res_0 << endl;
 
@@ -184,8 +193,9 @@ int main(int argc, char* argv[]){
     file.open("Jacobi.dat");
     for (int i=0; i<=Nx+2; i++){
           for (int j=0; j<=Ny+2; j++){
-            file << pos_x[i] << ";" << pos_y[j] << ";" << sol[i + Nx*j] <<endl;
+            file << pos_x[i] << " " << pos_y[j] << " " << sol[i + (Nx+2)*j] <<endl;
       }
+      file << endl;
     }
     file.close();
 

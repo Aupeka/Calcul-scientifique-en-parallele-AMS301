@@ -29,7 +29,7 @@ double V(double y, double b){
 int main(int argc, char* argv[]){
 
 //Algorithm parameters
-  double L = 1e5;
+  double L = 1e4;
   double epsilon = 1e-4;
 
 // Problem parameters
@@ -219,27 +219,28 @@ int main(int argc, char* argv[]){
       err[i] = sol[i] - sol_th[i];
     }
     
+    if (myRank==0){
+      //Print
+      cout << "***** Printing Jacobi's solution *****" <<endl;
 
-    //Print
-    cout << "***** Printing Jacobi's solution *****" <<endl;
+      cout << "Runtime: " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count())/100 << "[ms]"<< endl;
 
-    cout << "Runtime: " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count())/100 << "[ms]"<< endl;
+      //finding out why the program stopped
+      if (l > L){
+        cout << "Program stopped beacause l = " << l << "> L" << endl;
+      }
 
-    //finding out why the program stopped
-    if (l > L){
-      cout << "Program stopped beacause l = " << l << "> L" << endl;
+      else {
+        cout << "Program stopped because the residual value = " << n_res/n_res_0 << "< "<< epsilon << " where res_0 = " << n_res_0 << "and l = " << l << endl;
+      }
+
+      cout << "- Absolute error: " << l2_norm(err) << " for h = " << 1/sqrt(Nx*Ny) << endl;
+
+      cout << "- Norm of the residual value: " << n_res/n_res_0 << endl;
+
+      cout << "********************************" <<endl;
     }
-
-    else {
-      cout << "Program stopped because the residual value = " << n_res/n_res_0 << "< "<< epsilon << " where res_0 = " << n_res_0 << "and l = " << l << endl;
-    }
-
-    cout << "- Absolute error: " << l2_norm(err) << " for h = " << 1/sqrt(Nx*Ny) << endl;
-
-    cout << "- Norm of the residual value: " << n_res/n_res_0 << endl;
-
-    cout << "********************************" <<endl;
-
+    /*
     //File
     ofstream file;
     file.open("Jacobi.dat");
@@ -250,8 +251,9 @@ int main(int argc, char* argv[]){
       file << endl;
     }
     file.close();
-
+  */
   /* Solution display - end */
-
+  
+  MPI_Finalize();
   return 0;
 }

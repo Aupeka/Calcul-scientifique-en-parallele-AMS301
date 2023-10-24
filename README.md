@@ -11,5 +11,5 @@ Le projet contient :
 - Le code "Jacobi.cpp" continent le code suivant la méthode de Jacobi ;
 - Le code "Jacobi_para.cpp" continent le code paralléisé de la méthode de Jacobi ;
 - Le code "Gauss-Siedel.cpp" continent le code suivant la méthode de Gauss-Siedel ;
-- - Le code "Gauss-Siedel_para.cpp" continent le code paralléisé de la méthode de Gauss-Siedel ;
+- Le code "Gauss-Siedel_para.cpp" continent le code paralléisé de la méthode de Gauss-Siedel ;
 - Notre rapport de projet au format pdf

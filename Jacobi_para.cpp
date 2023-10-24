@@ -1,5 +1,5 @@
 // Compilation:
-//   mpicxx Jacobi_para.cpp
+//   mpicxx Jacobi.cpp
 // Execution:
 //   mpirun -np 4 ./a.out
 
@@ -30,16 +30,16 @@ double V(double y, double b){
 int main(int argc, char* argv[]){
 
 //Algorithm parameters
-  double L = 1e4;
-  double epsilon = 1e-2;
+  double L = 1e6;
+  double epsilon = 1e-5;
 
 // Problem parameters
   double a = 1.;
   double b = 1.;
   double alpha = 0.5;
   double U_0 = 0;
-  int Nx = 10;
-  int Ny = 10;
+  int Nx = 30;
+  int Ny = 30;
 
 //Coefficients
   double dx = a/(Nx+1);
@@ -78,7 +78,6 @@ int main(int argc, char* argv[]){
     }
   }
   /* ************* Validation process - end ************* */
-
 
   /* ************* Time loop - begin ************* */
 
@@ -162,7 +161,7 @@ int main(int argc, char* argv[]){
     n_res = 0;
 
     // Spatial loop
-    for (int i=i_start; i<=i_end; ++i){
+    for (int i=i_start; i<i_end+1; ++i){
         for (int j=1; j<=Ny; j++){
             //solNew[i+(Nx+2)*j + 1] = coeff * ((sol[i+1+(Nx+2)*j+1]+sol[i-1+(Nx+2)*j + 1])/(dx*dx) + (sol[i+(Nx+2)*(j+1) + 1]+sol[i+(Nx+2)*(j-1) + 1])/(dy*dy) - f[i + (Nx+2)*j + 1]);     
             solNew[i*(Ny+2) + j] = (-(sol[(i+1)*(Ny+2) + j] + sol[(i-1)*(Ny+2) + j])/(dx*dx) - (sol[i*(Ny+2) + j+1] + sol[i*(Ny+2) + j-1])/(dy*dy) + f[i*(Ny+2) + j])/(-2/(dx*dx)-2/(dy*dy));
@@ -184,9 +183,7 @@ int main(int argc, char* argv[]){
 
   // timeEnd
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
   /* ************* Time loop - end ************* */
-
 
   /* ************* Solution display - begin ************* */
 
@@ -215,8 +212,10 @@ int main(int argc, char* argv[]){
     if (myRank==0){
     
       //Print
-      cout << "***** Printing Jacobi's solution *****" <<endl;
-
+      cout << "***** Printing Jacobi's solution, p = "<< nbTasks <<" *****" <<endl;
+      
+      //double timeEnd = MPI_Wtime();
+      //cout << "Runtime: " <<timeEnd-timeInit << " [s]"<< endl;
       cout << "Runtime: " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count())/100 << "[ms]"<< endl;
 
       //finding out why the program stopped
@@ -234,32 +233,32 @@ int main(int argc, char* argv[]){
 
       cout << "********************************" <<endl;
     }
-    
-
-   /*
+  
   if (myRank==0){
     ofstream file;
-    file.open("Jacobi_para_cholesky.dat");
-    file << "***** Printing Jacobi's solution *****" <<endl;
+    file.open("Jacobi_para_cholesky.txt", ios::app);
+    
+    file << "***** Printing Jacobi's solution, p = "<< nbTasks <<" *****" <<endl;
 
     file << "Runtime: " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count())/100 << "[ms]"<< endl;
-
+    
     //finding out why the program stopped
     if (l > L){
       file << "Program stopped beacause l = " << l << "> L" << endl;
     }
 
     else {
-      file << "Program stopped because the residual value = " << n_res/n_res_0 << "< "<< epsilon << " where res_0 = " << n_res_0 << "and l = " << l << endl;
+      file << "Program stopped because the residual value = " << n_res/n_res_0 << "< "<< epsilon << "and l = " << l << endl;
     }
 
     file << "- Absolute error: " << l2_norm(err) << " for h = " << 1/sqrt(Nx*Ny) << endl;
 
     file << "- Norm of the residual value: " << n_res/n_res_0 << endl;
 
-    file << "********************************" <<endl;
+    file << "********************************\n\n" <<endl;
     }
     
+    /*
     //File
     ofstream file;
     file.open("Jacobi.dat");
@@ -270,7 +269,7 @@ int main(int argc, char* argv[]){
       file << endl;
     }
     file.close();
-  */
+    */
 
   /* ************* Solution display - end ************* */
   

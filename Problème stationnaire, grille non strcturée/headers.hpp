@@ -66,6 +66,9 @@ void buildListsNodesMPI(Mesh& mesh);
 // MPI-parallel exchange/add the interface terms
 void exchangeAddInterfMPI(ScaVector& vec, Mesh& mesh);
 
+// MPI-parallel remove the interface terms from smaller process
+void removeInterfMPI(ScaVector& vec, Mesh& mesh);
+
 //==== Functions in 'problem.cpp'
 
 // Compute the matrices of the linear wgsystem
@@ -85,6 +88,9 @@ void jacobi(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int
 
 //norm 2
 double norm_2(ScaVector& u);
+
+//Calcul du residu
+double calcul_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);
 
 //erreur l2
 double erreur_l2(SpMatrix& M, ScaVector& v);

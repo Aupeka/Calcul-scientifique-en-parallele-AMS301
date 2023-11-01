@@ -1,15 +1,7 @@
-# Calcul-scientifique-en-parallele-AMS301
+# Calcul scientifique en parallèle (AMS301, cours ENSTA Paris)
 
-Notre projet a pour objectif de résoudre numériquement un problème au dérivées partiels en utilisant des méthodes itératives, Jacobi et Gauss-Seidel puis des méthodes parallélisées. Nous débutons par la création d'un code séquentiel dit de Jacobi, suivi de sa parallélisation et nous évaluons les performances des deux algorithmes sur une station de travail de l'ENSTA. Parallèlement, nous développons également un code séquentiel pour la méthode de Gauss-Seidel. L'objectif est de comparer les performances des différentes méthodes (après les avoir validées). Cette phase initiale est cruciale pour établir une base solide pour la résolution ultérieure du problème et l'optimisation des méthodes numériques.
+Ce repo contient les codes ainsi que les rapports pour les deux projets du cours AMS301 - Calcul scientifique en parallèle donné en dernière année d'école d'ingenieur à ENSTA Paris (2023). Le travail a été réalisé par Nour El Haddad et Adrien Sardi.
 
-Une fois cela fait nous tester notre code et calculons notre résultat via le mésocentre Cholesky (Ecole Polytehcnique). Cela nous permet de calculer de façon plus pertinente l'efficacité de notre parallélisation.
+Le premier projet, "Grille structuré", a pour but de développer deux codes de résolutions de problèmes au différences finis. D'abord avec la méthode de Jacobi puis celle de Gauss-Siedel. Ensuite les codes sont parallélisés et leur performances sont évaluées sur le cluster Cholesky - Ecole Polytehcnique.
 
-Finalement, nous construisons également une version parallélisée de l'algorithme de Gauss-Siedel via une méthode dite de "Rouge et Noir".
-
-Le projet contient :
-
-- Le code "Jacobi.cpp" continent le code suivant la méthode de Jacobi ;
-- Le code "Jacobi_para.cpp" continent le code paralléisé de la méthode de Jacobi ;
-- Le code "Gauss-Siedel.cpp" continent le code suivant la méthode de Gauss-Siedel ;
-- Le code "Gauss-Siedel_para.cpp" continent le code paralléisé de la méthode de Gauss-Siedel ;
-- Notre rapport de projet au format pdf
+Le deuxième projet quand à lui, a pour but de compléter et d'améliorer un code de calcul d'éléments fini en parallèle. D'abord en complétant une méthode de Jacobi pour la résolution du problème puis en codant une méthode de gradient conjugué. Finalement, les perfomances des différents codes sont évaluées.

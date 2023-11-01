@@ -31,12 +31,9 @@ void jacobi(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int
   int it = 0;
   
   //Residu initialization
-  ScaVector residu(size);
-  ScaVector residu_0(size);
-  residu_0 = b - A*u;
-  double residuNorm_0 = norm_2(residu_0);
+  double residuNorm_0 = calcul_residu(A,b,u, mesh);
   
-  while (residuNorm > tol && it < maxit){
+  while (residuNorm/residuNorm_0 > tol && it < maxit){
     
     // Compute N*u
     ScaVector Nu = N*u;
@@ -47,10 +44,11 @@ void jacobi(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int
       u(i) = 1/Mdiag(i) * (Nu(i) + b(i));
     }
     // Update residual and iterator
-    if((it % 100) == 0){
-      residu = b - A*u;
-      residuNorm = norm_2(residu)/residuNorm_0; //Tableau noeuds d'interface donc voir comment faire : retrancher --> possibilité d'avoir des noeuds entre 3 sous domaines
-      if(myRank == 0)
+    residuNorm = calcul_residu(A,b,u, mesh);
+    
+    //cout
+    if(((it % (maxit/1000)) == 0)){
+       if(myRank == 0)
         cout << "   [" << it << "] residual: " << residuNorm << endl;
     }
     it++;
@@ -58,6 +56,6 @@ void jacobi(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int
   
   if(myRank == 0){
     cout << "   -> final iteration: " << it << " (prescribed max: " << maxit << ")" << endl;
-    cout << "   -> final residual: " << residuNorm << " (prescribed tol: " << tol << ")" << endl;
+    cout << "   -> final residual: " << residuNorm/residuNorm_0 << " (prescribed tol: " << tol << ")" << endl;
   }
 }

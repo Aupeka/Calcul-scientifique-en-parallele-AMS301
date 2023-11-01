@@ -24,8 +24,8 @@ int main(int argc, char* argv[])
     double x = mesh.coords(i,0);
     double y = mesh.coords(i,1);
     uNum(i) = 0.;
-    uExa(i) = cos(4*M_PI*x/1)*cos(M_PI*y/1); // a = 1 = b
-    f(i) = uExa(i)*(1 - 16*M_PI*M_PI/(1*1) - M_PI*M_PI/(1*1)); // a = 1 = b
+    uExa(i) = sin(2*M_PI*x)*sin(2*M_PI*y);//cos(4*M_PI*x)*cos(M_PI*y); // a = 1 = b
+    f(i) = 8*M_PI*M_PI*sin(2*M_PI*x)*sin(2*M_PI*y);//17*M_PI*M_PI*uExa(i); // a = 1 = b
   }
   
   Problem pbm;
@@ -34,20 +34,20 @@ int main(int argc, char* argv[])
   
   // 4. Solve problem
   double tol = 1e-6;
-  int maxit = 1e3;
+  int maxit = 1e4;
   jacobi(pbm.A, pbm.b, uNum, mesh, tol, maxit);
   
   // 5. Compute error and export fields
   ScaVector uErr = uNum - uExa;
   
-    //Compute export fields
+    //*Export fields
   exportFieldMsh(uNum, mesh, "solNum", "benchmark/solNum.msh");
   exportFieldMsh(uExa, mesh, "solRef", "benchmark/solExa.msh");
   exportFieldMsh(uErr, mesh, "solErr", "benchmark/solErr.msh");
   
     //Compute error
   double err_l2 = erreur_l2(pbm.M, uErr); //uErr = v
-  cout << "Erreur L2 : " << err_l2 << endl;
+  if (myRank == 0){cout << "   -> Erreur L2 : " << err_l2 << endl;}
   
   // 6. Finilize MPI
   MPI_Barrier(MPI_COMM_WORLD);

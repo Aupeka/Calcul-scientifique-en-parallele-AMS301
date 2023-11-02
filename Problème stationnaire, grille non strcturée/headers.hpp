@@ -79,10 +79,10 @@ void buildProblem(Problem& p, Mesh& mesh, double alpha, ScaVector& f);
 // Solution of the system Au=b with Jacobi
 void jacobi(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int maxit);
 
-//==== Functions in 'solver_CGM.cpp'
+//==== Functions in 'solver_cg.cpp'
 
 // Solution of the system Au=b with Conjugate gradient method
-//void cgm(...);
+void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int maxit);
 
 //==== Functions in 'fonction.cpp'
 

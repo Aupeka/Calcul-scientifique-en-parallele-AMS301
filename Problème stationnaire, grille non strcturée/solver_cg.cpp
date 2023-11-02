@@ -7,7 +7,7 @@ extern int nbTasks;
 // Solution of the system Au=b with gradient conjugate
 //================================================================================
 
-void gradient(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int maxit)
+void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int maxit)
 {
   if(myRank == 0)
     cout << "== gradient conjugate" << endl;

@@ -79,7 +79,7 @@ void buildProblem(Problem& p, Mesh& mesh, double alpha, ScaVector& f);
 // Solution of the system Au=b with Jacobi
 void jacobi(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int maxit);
 
-//==== Functions in 'solver_cg.cpp'
+//==== Functions in 'solver_CGM.cpp'
 
 // Solution of the system Au=b with Conjugate gradient method
 void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int maxit);
@@ -89,8 +89,11 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
 //norm 2
 double norm_2(ScaVector& u);
 
-//Calcul du residu
-double calcul_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);
+//Mise à jour du residu
+void update_residu(ScaVector& residu, SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);
+
+//Calcul de la norme du residu directement
+double calcul_norm_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);
 
 //erreur l2
 double erreur_l2(SpMatrix& M, ScaVector& v);

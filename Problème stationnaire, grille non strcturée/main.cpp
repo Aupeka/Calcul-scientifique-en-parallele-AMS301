@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
   buildListsNodesMPI(mesh);
   
   // 3. Build problem (vectors and matrices)
+  double alpha = 1;
   ScaVector uNum(mesh.nbOfNodes);
   ScaVector uExa(mesh.nbOfNodes);
   ScaVector f(mesh.nbOfNodes);
@@ -24,18 +25,18 @@ int main(int argc, char* argv[])
     double x = mesh.coords(i,0);
     double y = mesh.coords(i,1);
     uNum(i) = 0.;
-    uExa(i) = sin(2*M_PI*x)*sin(2*M_PI*y);//cos(4*M_PI*x)*cos(M_PI*y); // a = 1 = b
-    f(i) = 8*M_PI*M_PI*sin(2*M_PI*x)*sin(2*M_PI*y);//17*M_PI*M_PI*uExa(i); // a = 1 = b
+    uExa(i) = cos(4*M_PI*x)*cos(M_PI*y); // a = 1 = b
+    f(i) = (17*M_PI*M_PI+alpha)*uExa(i); // /!\ Pbm de la chaleur
   }
   
   Problem pbm;
-  double alpha = 1;
   buildProblem(pbm,mesh,alpha,f);
   
   // 4. Solve problem
   double tol = 1e-6;
-  int maxit = 1e4;
-  jacobi(pbm.A, pbm.b, uNum, mesh, tol, maxit);
+  int maxit = 500;
+  //jacobi(pbm.A, pbm.b, uNum, mesh, tol, maxit);
+  gradient_conjugate(pbm.A, pbm.b, uNum, mesh, tol, maxit);
   
   // 5. Compute error and export fields
   ScaVector uErr = uNum - uExa;

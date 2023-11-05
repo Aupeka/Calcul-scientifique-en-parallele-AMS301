@@ -12,7 +12,7 @@ double norm_2(ScaVector& u) {
     return sqrt(accum/size);
 }
 
-double calcul_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh){
+double calcul_norm_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh){
     
     //Calcul du résidu
     ScaVector residu = b - A*u;
@@ -26,6 +26,14 @@ double calcul_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh){
 
     //return
     return n_residu;
+}
+
+void update_residu(ScaVector& residu, SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh){
+    
+    //Mise à jour du résidu
+    residu = b - A*u;
+    exchangeAddInterfMPI(residu, mesh);
+    removeInterfMPI(residu,mesh);
 }
 
 double erreur_l2(SpMatrix& M, ScaVector& v){

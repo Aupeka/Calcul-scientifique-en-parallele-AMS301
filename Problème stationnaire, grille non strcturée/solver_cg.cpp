@@ -15,7 +15,7 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
   // Compute the solver parameters
   int size = A.rows();
   ScaVector p(size);
-  ScaVector alpha_(size);
+  double alpha_;
   
   //Gradient Conjugate solver
   int it = 0;
@@ -32,16 +32,14 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
     // Compute alpha_
     ScaVector Ap = A*p;
     exchangeAddInterfMPI(Ap, mesh);
-
-    for (int i = 0; i < size; i++){
-        alpha_(i) = p(i)*p(i)/(p(i)*Ap(i));
-    }
+    alpha_ = norm_2(p)/produit_scalaire(Ap,p);
+    //cout << "alpha= " << alpha_ << endl;
 
     // Update field
     for(int i=0; i<size; i++){
-      u(i) = u(i) + alpha_(i)*p(i); // /!\ Pbm ici, des NAN sortent mais je ne sais pas pourquoi ...
+      u(i) += alpha_*p(i); 
     }
-    cout << "norm_test = " << u << endl;
+    exchangeAddInterfMPI(u, mesh);
 
     //Update residu
     update_residu(p,A,b,u, mesh);
@@ -50,10 +48,16 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
     norm_p = norm_2(p);
     buff = norm_p;
     MPI_Allreduce (&buff, &norm_p, 1, MPI_DOUBLE , MPI_SUM, MPI_COMM_WORLD);
+    cout << "norm_p= " << norm_p << endl;
+
+    if(((it % (maxit/10)) == 0)){
+       if(myRank == 0)
+        cout << "   [" << it << "] residual: " << norm_p/norm_p_0 << endl;
+    }
 
     it++;
   }
-  
+
 if(myRank == 0){
     cout << "   -> final iteration: " << it << " (prescribed max: " << maxit << ")" << endl;
     cout << "   -> final residual: " << norm_p/norm_p_0 << " (prescribed tol: " << tol << ")" << endl;

@@ -34,6 +34,7 @@ void update_residu(ScaVector& residu, SpMatrix& A, ScaVector& b, ScaVector& u, M
     residu = b - A*u;
     exchangeAddInterfMPI(residu, mesh);
     removeInterfMPI(residu,mesh);
+    //cout << "norm_test = " << norm_2(residu) << endl;
 }
 
 double erreur_l2(SpMatrix& M, ScaVector& v){
@@ -47,4 +48,13 @@ double erreur_l2(SpMatrix& M, ScaVector& v){
     MPI_Allreduce (&buff, &n_err, 1, MPI_DOUBLE , MPI_SUM, MPI_COMM_WORLD);
     
     return n_err;
+}
+
+double produit_scalaire(ScaVector& u, ScaVector& v){
+    double accum = 0.;
+    for (int i = 0; i < u.size(); ++i){
+        accum = accum + u(i)*v(i);
+    }
+    return accum;
+
 }

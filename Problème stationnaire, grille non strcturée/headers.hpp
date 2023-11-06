@@ -98,4 +98,7 @@ double calcul_norm_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);
 //erreur l2
 double erreur_l2(SpMatrix& M, ScaVector& v);
 
+//Produit Scalaire
+double produit_scalaire(ScaVector& u, ScaVector& v);
+
 #endif /* HEADERS_HPP */

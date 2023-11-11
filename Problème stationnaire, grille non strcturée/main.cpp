@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
   exportFieldMsh(uErr, mesh, "solErr", "benchmark/solErr.msh");
   
     //Compute error
-  double err_l2 = erreur_l2(pbm.M, uErr); //uErr = v
+  double err_l2 = erreur_l2(pbm.M, uErr, mesh); //uErr = v
   if (myRank == 0){cout << "   -> Erreur L2 : " << err_l2 << endl;}
   
   // 6. Finilize MPI

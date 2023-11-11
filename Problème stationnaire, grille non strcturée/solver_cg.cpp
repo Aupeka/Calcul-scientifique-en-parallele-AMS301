@@ -14,45 +14,65 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
 
   // Compute the solver parameters
   int size = A.rows();
-  ScaVector p(size);
-  double alpha_;
+  ScaVector p(size); ScaVector r(size);
+  ScaVector Ar(size); ScaVector Ap(size);
+  double beta; double alpha_;
   
   //Gradient Conjugate solver
   int it = 0;
-  p = b - A*u;
-  exchangeAddInterfMPI(p, mesh);
-
+  r = b - A*u;
+  exchangeAddInterfMPI(r, mesh);
+  p = r;
+  
   //Residu initialization
-  double norm_p_0 = calcul_norm_residu(A,b,u, mesh);
-  double norm_p = 1e2;
-  double buff;
+  double norm_r = 1e2;
+  double norm_r_0 = norm_2_glo(r,mesh);
 
-  while (norm_p/norm_p_0 > tol && it < maxit){
+  while (norm_r/norm_r_0 > tol && it < maxit){
     
-    // Compute alpha_
-    ScaVector Ap = A*p;
+    //==============================================
+    // 1. Update field 
+    //==============================================
+      
+      //Update alpha_
+    Ap = A*p;
     exchangeAddInterfMPI(Ap, mesh);
-    alpha_ = norm_2(p)/produit_scalaire(Ap,p);
-    //cout << "alpha= " << alpha_ << endl;
+    alpha_ = produit_scalaire_glo(r,p,mesh)/produit_scalaire_glo(Ap,p,mesh);
 
-    // Update field
-    for(int i=0; i<size; i++){
-      u(i) += alpha_*p(i); 
-    }
-    exchangeAddInterfMPI(u, mesh);
+      //Update u
+    u += alpha_*p;
 
-    //Update residu
-    update_residu(p,A,b,u, mesh);
+    //==============================================
+    // 2. Update residu and p
+    //==============================================
 
-    //Update of norm_p
-    norm_p = norm_2(p);
-    buff = norm_p;
-    MPI_Allreduce (&buff, &norm_p, 1, MPI_DOUBLE , MPI_SUM, MPI_COMM_WORLD);
-    cout << "norm_p= " << norm_p << endl;
+      //Update r
+    r -= alpha_*Ap;    
+    
+      //Update beta
+    Ar = A*r;
+    exchangeAddInterfMPI(Ar, mesh);
 
+    beta = -produit_scalaire_glo(Ar,p,mesh)/produit_scalaire_glo(Ap,p,mesh);
+
+      //Update p
+    p = r + beta*p;
+
+    //==============================================
+    // 3. Update of norm_r
+    //==============================================
+    norm_r = norm_2_glo(r,mesh);
+
+    //==============================================
+    // 4. Affichage
+    //==============================================
     if(((it % (maxit/10)) == 0)){
-       if(myRank == 0)
-        cout << "   [" << it << "] residual: " << norm_p/norm_p_0 << endl;
+       if(myRank == 0){
+        cout << "   [" << it << "] residual: " << norm_r/norm_r_0 << endl;
+        //cout << "alpha = " << alpha_ << endl;
+        //cout << "norm_r = " << norm_r << endl;
+        //cout << "r = " << r << endl;
+       }
     }
 
     it++;
@@ -60,7 +80,8 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
 
 if(myRank == 0){
     cout << "   -> final iteration: " << it << " (prescribed max: " << maxit << ")" << endl;
-    cout << "   -> final residual: " << norm_p/norm_p_0 << " (prescribed tol: " << tol << ")" << endl;
+    cout << "   -> final residual: " << norm_r/norm_r_0 << " (prescribed tol: " << tol << ")" << endl;
+  
   }
 
 }

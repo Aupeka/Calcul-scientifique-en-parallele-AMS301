@@ -111,7 +111,7 @@ void update_residu(ScaVector& residu, SpMatrix& A, ScaVector& b, ScaVector& u, M
 double calcul_norm_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);
 
 //erreur l2
-double erreur_l2(SpMatrix& M, ScaVector& v);
+double erreur_l2(SpMatrix& M, ScaVector& v, Mesh& mesh);
 
 
 #endif /* HEADERS_HPP */

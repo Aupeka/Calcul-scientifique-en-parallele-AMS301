@@ -22,14 +22,6 @@ double norm_2_glo(ScaVector& u, Mesh& mesh) {
     return sqrt(n_glo); //size ?
 }
 
-double produit_scalaire(ScaVector& u, ScaVector& v){
-    double accum = 0.;
-    for (int i = 0; i < u.size(); ++i){
-        accum = accum + u(i)*v(i);
-    }
-    return accum;
-}
-
 double produit_scalaire_glo(ScaVector& u, ScaVector& v, Mesh& mesh){
     removeInterfMPI(u,mesh);
     removeInterfMPI(v,mesh);
@@ -39,6 +31,14 @@ double produit_scalaire_glo(ScaVector& u, ScaVector& v, Mesh& mesh){
     MPI_Allreduce (&ps_loc, &ps_glo, 1, MPI_DOUBLE , MPI_SUM, MPI_COMM_WORLD);
 
     return ps_glo; // Diviser par le size ????
+}
+
+double produit_scalaire(ScaVector& u, ScaVector& v){
+    double accum = 0.;
+    for (int i = 0; i < u.size(); ++i){
+        accum = accum + u(i)*v(i);
+    }
+    return accum;
 }
 
 double calcul_norm_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh){
@@ -65,9 +65,10 @@ void update_residu(ScaVector& residu, SpMatrix& A, ScaVector& b, ScaVector& u, M
     removeInterfMPI(residu,mesh);
 }
 
-double erreur_l2(SpMatrix& M, ScaVector& v){
+double erreur_l2(SpMatrix& M, ScaVector& v, Mesh& mesh){
     //Error
     double size = M.rows();
+    removeInterfMPI(v,mesh);
     ScaVector err = v.transpose()*M*v;
     double n_err = sqrt(err(0)/size);
 
@@ -77,5 +78,3 @@ double erreur_l2(SpMatrix& M, ScaVector& v){
     
     return n_err;
 }
-
-

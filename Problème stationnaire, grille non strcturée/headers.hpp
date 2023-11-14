@@ -105,7 +105,7 @@ double produit_scalaire(ScaVector& u, ScaVector& v);
 double produit_scalaire_glo(ScaVector& u, ScaVector& v, Mesh& mesh);
 
 //Mise à jour du residu
-void update_residu(ScaVector& residu, SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);
+//void update_residu(ScaVector& residu, SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);
 
 //Calcul de la norme du residu directement
 double calcul_norm_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);

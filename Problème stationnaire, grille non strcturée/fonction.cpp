@@ -3,7 +3,7 @@
 extern int myRank;
 extern int nbTasks;
 
-double norm_2(ScaVector& u) {
+double norm_2(ScaVector u) {
     double size = u.size();
     double accum = 0.;
     for (int i = 0; i < size; ++i) {
@@ -12,17 +12,22 @@ double norm_2(ScaVector& u) {
     return sqrt(accum/size);
 }
 
-double norm_2_glo(ScaVector& u, Mesh& mesh) {
+double norm_2_glo(ScaVector u, Mesh& mesh) {
     removeInterfMPI(u,mesh);
-    double n_loc = (u.transpose()*u)(0);
+    double n_loc = 0;
     double n_glo;
+
+    double size = u.size();
+    for (int i = 0; i < size; ++i) {
+        n_loc += u(i)*u(i);
+    }
     
     MPI_Allreduce (&n_loc, &n_glo, 1, MPI_DOUBLE , MPI_SUM, MPI_COMM_WORLD);
 
     return sqrt(n_glo); //size --> Plus haut
 }
 
-double produit_scalaire(ScaVector& u, ScaVector& v){
+double produit_scalaire(ScaVector u, ScaVector& v){
     double accum = 0.;
     for (int i = 0; i < u.size(); ++i){
         accum = accum + u(i)*v(i);
@@ -30,7 +35,7 @@ double produit_scalaire(ScaVector& u, ScaVector& v){
     return accum;
 }
 
-double produit_scalaire_glo(ScaVector& u, ScaVector& v, Mesh& mesh){
+double produit_scalaire_glo(ScaVector u, ScaVector v, Mesh& mesh){
     removeInterfMPI(u,mesh);
     removeInterfMPI(v,mesh);
     double ps_loc = (u.transpose()*v)(0);
@@ -40,8 +45,6 @@ double produit_scalaire_glo(ScaVector& u, ScaVector& v, Mesh& mesh){
 
     return ps_glo; // Diviser par le size ????
 }
-
-
 
 
 double calcul_norm_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh){
@@ -76,7 +79,7 @@ void update_residu(ScaVector& residu, SpMatrix& A, ScaVector& b, ScaVector& u, M
 }
 */
 
-double erreur_l2(SpMatrix& M, ScaVector& v, Mesh& mesh){
+double erreur_l2(SpMatrix& M, ScaVector v, Mesh& mesh){
     //Error
     double size = M.rows();
     removeInterfMPI(v,mesh);

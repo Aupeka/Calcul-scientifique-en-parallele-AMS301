@@ -33,16 +33,17 @@ int main(int argc, char* argv[])
   buildProblem(pbm,mesh,alpha,f);
   
   // 4. Solve problem
-  double tol = 1e-6;
-  int maxit = 500;
+  double tol = 1e-5;
+  int maxit = 1e4;
   //jacobi(pbm.A, pbm.b, uNum, mesh, tol, maxit);
   gradient_conjugate(pbm.A, pbm.b, uNum, mesh, tol, maxit);
+  //gradient_conjugate_seq(pbm.A, pbm.b, uNum, mesh, tol, maxit);
   
   // 5. Compute error and export fields
   ScaVector uErr = uNum - uExa;
   
     //*Export fields
-  exportFieldMsh(uNum, mesh, "solNum", "benchmark/solNum.msh");
+  exportFieldMsh(uNum, mesh, "solNum_u", "benchmark/solNum.msh");
   exportFieldMsh(uExa, mesh, "solRef", "benchmark/solExa.msh");
   exportFieldMsh(uErr, mesh, "solErr", "benchmark/solErr.msh");
   

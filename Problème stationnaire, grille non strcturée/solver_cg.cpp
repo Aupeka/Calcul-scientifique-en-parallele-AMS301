@@ -14,9 +14,9 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
 
   // Compute the solver parameters
   int size = A.rows();
-  ScaVector p(size); ScaVector r(size);
+  ScaVector p(size); ScaVector r(size); ScaVector r_test(size);
   ScaVector Ar(size); ScaVector Ap(size);
-  double beta; double alpha_;
+  double beta = 0; double alpha_ = 0;
   
   //Gradient Conjugate solver
   int it = 0;
@@ -24,6 +24,7 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
   exchangeAddInterfMPI(Au, mesh);
   r = b - Au;
   p = r;
+  //r_test = r;
   
   //Residu initialization
   double norm_r = 1e2;
@@ -40,14 +41,11 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
     alpha_ = produit_scalaire_glo(r,p,mesh)/produit_scalaire_glo(Ap,p,mesh);
 
       //Update field
-    u = u + alpha_*p;
+    u += alpha_*p;
 
-      //Update r
+      //Update r (--> r = r - alpha_*Ap;)
     r = r - alpha_*Ap;
-      /*Au = A*u;
-      exchangeAddInterfMPI(Au, mesh);
-      r = b - Au;*/   
-    
+      
       //Update beta
     Ar = A*r;
     exchangeAddInterfMPI(Ar, mesh);
@@ -63,12 +61,13 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
     //==============================================
     // 2. Display
     //==============================================
-    if(((it % (maxit/100)) == 0)){
+    if(((it % (maxit/1000)) == 0)){
        if(myRank == 0){
+        //cout << "\nAprès la boucle" <<endl;
         cout << "   [" << it << "] residual: " << norm_r/norm_r_0 << endl;
-        //cout << "alpha = " << alpha_ << endl;
-        //cout << "beta = " << beta << endl;
-        //cout << "norm_r = " << norm_r << endl;
+        //cout << "   [" << it << "] alpha = " << alpha_ << endl;
+        //cout << "   [" << it << "] beta = " << beta << endl;
+        //cout << "norm_r_0 = " << norm_r_0 << endl;
        }
     }
 
@@ -80,5 +79,4 @@ if(myRank == 0){
     cout << "   -> final residual: " << norm_r/norm_r_0 << " (prescribed tol: " << tol << ")" << endl;
   
   }
-
 }

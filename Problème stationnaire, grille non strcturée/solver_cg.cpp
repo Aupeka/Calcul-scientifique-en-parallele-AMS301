@@ -20,8 +20,9 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
   
   //Gradient Conjugate solver
   int it = 0;
-  r = b - A*u;
-  exchangeAddInterfMPI(r, mesh);
+  ScaVector Au = A*u;
+  exchangeAddInterfMPI(Au, mesh);
+  r = b - Au;
   p = r;
   
   //Residu initialization
@@ -29,25 +30,23 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
   double norm_r_0 = norm_2_glo(r,mesh);
 
   while (norm_r/norm_r_0 > tol && it < maxit){
-    
     //==============================================
-    // 1. Update field 
+    // 1. Updates
     //==============================================
-      
+
       //Update alpha_
     Ap = A*p;
     exchangeAddInterfMPI(Ap, mesh);
     alpha_ = produit_scalaire_glo(r,p,mesh)/produit_scalaire_glo(Ap,p,mesh);
 
-      //Update u
-    u += alpha_*p;
-
-    //==============================================
-    // 2. Update residu and p
-    //==============================================
+      //Update field
+    u = u + alpha_*p;
 
       //Update r
-    r -= alpha_*Ap;    
+    r = r - alpha_*Ap;
+      /*Au = A*u;
+      exchangeAddInterfMPI(Au, mesh);
+      r = b - Au;*/   
     
       //Update beta
     Ar = A*r;
@@ -58,20 +57,18 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
       //Update p
     p = r + beta*p;
 
-    //==============================================
-    // 3. Update of norm_r
-    //==============================================
+      //Update norm_r
     norm_r = norm_2_glo(r,mesh);
 
     //==============================================
-    // 4. Affichage
+    // 2. Display
     //==============================================
-    if(((it % (maxit/10)) == 0)){
+    if(((it % (maxit/100)) == 0)){
        if(myRank == 0){
         cout << "   [" << it << "] residual: " << norm_r/norm_r_0 << endl;
         //cout << "alpha = " << alpha_ << endl;
+        //cout << "beta = " << beta << endl;
         //cout << "norm_r = " << norm_r << endl;
-        //cout << "r = " << r << endl;
        }
     }
 

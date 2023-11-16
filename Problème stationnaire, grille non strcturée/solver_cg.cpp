@@ -10,7 +10,7 @@ extern int nbTasks;
 void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int maxit)
 {
   if(myRank == 0)
-    cout << "== gradient conjugate" << endl;
+    cout << "== gradient conjugate, nbTasks = "<< nbTasks << endl;
 
   // Compute the solver parameters
   int size = A.rows();
@@ -24,11 +24,13 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
   exchangeAddInterfMPI(Au, mesh);
   r = b - Au;
   p = r;
-  //r_test = r;
   
   //Residu initialization
   double norm_r = 1e2;
   double norm_r_0 = norm_2_glo(r,mesh);
+
+  // Check time
+  double timeInit = MPI_Wtime();
 
   while (norm_r/norm_r_0 > tol && it < maxit){
     //==============================================
@@ -43,7 +45,7 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
       //Update field
     u += alpha_*p;
 
-      //Update r (--> r = r - alpha_*Ap;)
+      //Update r
     r = r - alpha_*Ap;
       
       //Update beta
@@ -61,17 +63,21 @@ void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, dou
     //==============================================
     // 2. Display
     //==============================================
-    if(((it % (maxit/1000)) == 0)){
+    
+    if(((it % (maxit/10)) == 0)){
        if(myRank == 0){
-        //cout << "\nAprès la boucle" <<endl;
         cout << "   [" << it << "] residual: " << norm_r/norm_r_0 << endl;
-        //cout << "   [" << it << "] alpha = " << alpha_ << endl;
-        //cout << "   [" << it << "] beta = " << beta << endl;
-        //cout << "norm_r_0 = " << norm_r_0 << endl;
        }
     }
 
     it++;
+  }
+
+  // Check time
+  MPI_Barrier(MPI_COMM_WORLD);
+  if(myRank == 0){
+    double timeEnd = MPI_Wtime();
+    cout << "   -> Runtime: " << timeEnd-timeInit << " s" << endl;
   }
 
 if(myRank == 0){

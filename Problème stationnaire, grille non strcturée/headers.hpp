@@ -93,25 +93,25 @@ void gradient_conjugate_seq(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh,
 //==== Functions in 'fonction.cpp'
 
 //norm 2
-double norm_2(ScaVector& u);
+double norm_2(ScaVector u);
 
 //norm 2 global (renvoie la valeur en prenant tout le vecteur)
-double norm_2_glo(ScaVector& u, Mesh& mesh);
+double norm_2_glo(ScaVector u, Mesh& mesh);
 
 //Produit Scalaire
-double produit_scalaire(ScaVector& u, ScaVector& v);
+double produit_scalaire(ScaVector u, ScaVector& v);
 
 //Produit Scalaire (Global !)
-double produit_scalaire_glo(ScaVector& u, ScaVector& v, Mesh& mesh);
+double produit_scalaire_glo(ScaVector u, ScaVector v, Mesh& mesh);
 
 //Mise à jour du residu
 //void update_residu(ScaVector& residu, SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);
 
 //Calcul de la norme du residu directement
-double calcul_norm_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);
+//double calcul_norm_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);
 
 //erreur l2
-double erreur_l2(SpMatrix& M, ScaVector& v, Mesh& mesh);
+double erreur_l2(SpMatrix& M, ScaVector v, Mesh& mesh);
 
 
 #endif /* HEADERS_HPP */

@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
   buildProblem(pbm,mesh,alpha,f);
   
   // 4. Solve problem
-  double tol = 1e-5;
+  double tol = 1e-6;
   int maxit = 1e4;
   //jacobi(pbm.A, pbm.b, uNum, mesh, tol, maxit);
   gradient_conjugate(pbm.A, pbm.b, uNum, mesh, tol, maxit);

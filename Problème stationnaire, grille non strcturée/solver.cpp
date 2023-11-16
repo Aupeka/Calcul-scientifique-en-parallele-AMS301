@@ -40,11 +40,6 @@ void jacobi(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int
   // Check time
   double timeInit = MPI_Wtime();
 
-  if(((it % (maxit/10)) == 0)){
-       //if(myRank == 0)
-        cout << "   [" << it << "] test: " << A << endl;
-    }
-
   while (residuNorm/residuNorm_0 > tol && it < maxit){
     
     // Compute N*u

@@ -27,31 +27,54 @@ void jacobi(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int
   exchangeAddInterfMPI(Mdiag, mesh);//Echange les coeffs pour les noeuds des deux interfaces et on calcul le résultat
   
   // Jacobi solver
-  double residuNorm = 1e2;
   int it = 0;
+  ScaVector Nu;
+  ScaVector Au = A*u;
+  exchangeAddInterfMPI(Au, mesh);
   
   //Residu initialization
-  double residuNorm_0 = calcul_residu(A,b,u, mesh);
+  ScaVector residu = b - Au;
+  double residuNorm = 1e2;
+  double residuNorm_0 = norm_2_glo(residu,mesh);
   
+  // Check time
+  double timeInit = MPI_Wtime();
+
+  if(((it % (maxit/10)) == 0)){
+       //if(myRank == 0)
+        cout << "   [" << it << "] test: " << A << endl;
+    }
+
   while (residuNorm/residuNorm_0 > tol && it < maxit){
     
     // Compute N*u
-    ScaVector Nu = N*u;
+    Nu = N*u;
     exchangeAddInterfMPI(Nu, mesh); //Afficher avant-après pour voir la modif
     
     // Update field
     for(int i=0; i<size; i++){
       u(i) = 1/Mdiag(i) * (Nu(i) + b(i));
     }
+
     // Update residual and iterator
-    residuNorm = calcul_residu(A,b,u, mesh);
-    
-    //cout
-    if(((it % (maxit/1000)) == 0)){
+    Au = A*u;
+    exchangeAddInterfMPI(Au, mesh);
+
+    residu = b - Au;
+    residuNorm = norm_2_glo(residu, mesh);
+
+    if(((it % (maxit/10)) == 0)){
        if(myRank == 0)
-        cout << "   [" << it << "] residual: " << residuNorm << endl;
+        cout << "   [" << it << "] residual: " << residuNorm/residuNorm_0 << endl;
     }
     it++;
+  }
+
+  // Check time
+  MPI_Barrier(MPI_COMM_WORLD);
+  if(myRank == 0){
+    double timeEnd = MPI_Wtime();
+    cout << "   -> Runtime: " << timeEnd-timeInit << " s" << endl;
   }
   
   if(myRank == 0){

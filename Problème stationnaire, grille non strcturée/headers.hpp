@@ -84,12 +84,6 @@ void jacobi(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int
 // Solution of the system Au=b with Conjugate gradient method
 void gradient_conjugate(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int maxit);
 
-//==== Functions in 'solver_cg_seq.cpp'
-
-// Solution of the system Au=b with Conjugate gradient method
-void gradient_conjugate_seq(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int maxit);
-
-
 //==== Functions in 'fonction.cpp'
 
 //norm 2
@@ -103,12 +97,6 @@ double produit_scalaire(ScaVector u, ScaVector& v);
 
 //Produit Scalaire (Global !)
 double produit_scalaire_glo(ScaVector u, ScaVector v, Mesh& mesh);
-
-//Mise à jour du residu
-//void update_residu(ScaVector& residu, SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);
-
-//Calcul de la norme du residu directement
-//double calcul_norm_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh);
 
 //erreur l2
 double erreur_l2(SpMatrix& M, ScaVector v, Mesh& mesh);

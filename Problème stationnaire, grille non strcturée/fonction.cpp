@@ -46,40 +46,6 @@ double produit_scalaire_glo(ScaVector u, ScaVector v, Mesh& mesh){
     return ps_glo; // Diviser par le size ????
 }
 
-/*
-double calcul_norm_residu(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh){
-    
-    //Calcul du résidu
-    ScaVector Au = A*u;
-    exchangeAddInterfMPI(Au, mesh);
-    ScaVector residu = b - A*u;
-    
-    double n_residu = norm_2_glo(residu, mesh);
-
-    
-    //Calcul résidu v1
-    removeInterfMPI(residu,mesh);
-    double n_residu = norm_2(residu);
-
-        //MPI exchange
-    double buff = n_residu*n_residu; //Problème de Somme des racines
-    MPI_Allreduce (&buff, &n_residu, 1, MPI_DOUBLE , MPI_SUM, MPI_COMM_WORLD);
-    
-
-    //return
-    return n_residu;
-}*/
-
-/*
-void update_residu(ScaVector& residu, SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh){
-    
-    //Mise à jour du résidu
-    residu = b - A*u;
-    exchangeAddInterfMPI(residu, mesh);
-    removeInterfMPI(residu,mesh);
-}
-*/
-
 double erreur_l2(SpMatrix& M, ScaVector v, Mesh& mesh){
     //Error
     double size = M.rows();

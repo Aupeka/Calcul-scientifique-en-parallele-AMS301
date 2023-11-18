@@ -24,7 +24,7 @@ double norm_2_glo(ScaVector u, Mesh& mesh) {
     
     MPI_Allreduce (&n_loc, &n_glo, 1, MPI_DOUBLE , MPI_SUM, MPI_COMM_WORLD);
 
-    return sqrt(n_glo); //size --> Plus haut
+    return sqrt(n_glo);
 }
 
 double produit_scalaire(ScaVector u, ScaVector& v){
@@ -43,7 +43,7 @@ double produit_scalaire_glo(ScaVector u, ScaVector v, Mesh& mesh){
 
     MPI_Allreduce (&ps_loc, &ps_glo, 1, MPI_DOUBLE , MPI_SUM, MPI_COMM_WORLD);
 
-    return ps_glo; // Diviser par le size ????
+    return ps_glo;
 }
 
 double erreur_l2(SpMatrix& M, ScaVector v, Mesh& mesh){

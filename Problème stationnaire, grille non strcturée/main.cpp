@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     double y = mesh.coords(i,1);
     uNum(i) = 0.;
     uExa(i) = cos(4*M_PI*x)*cos(M_PI*y); // a = 1 = b
-    f(i) = (17*M_PI*M_PI+alpha)*uExa(i); // /!\ Pbm de la chaleur
+    f(i) = (17*M_PI*M_PI+alpha)*uExa(i); 
   }
   
   Problem pbm;

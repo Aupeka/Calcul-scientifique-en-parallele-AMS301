@@ -44,7 +44,7 @@ void jacobi(SpMatrix& A, ScaVector& b, ScaVector& u, Mesh& mesh, double tol, int
     
     // Compute N*u
     Nu = N*u;
-    exchangeAddInterfMPI(Nu, mesh); //Afficher avant-après pour voir la modif
+    exchangeAddInterfMPI(Nu, mesh);
     
     // Update field
     for(int i=0; i<size; i++){

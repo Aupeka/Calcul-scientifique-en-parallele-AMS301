@@ -151,7 +151,7 @@ void removeInterfMPI(ScaVector& vec, Mesh& mesh)
   //As a result the interface component are only calculated for the first process to 
   //face them
   
-  for(int nTask = 0; nTask < myRank+1; ++nTask){ //nTask = 0 ?
+  for(int nTask = 0; nTask < myRank+1; ++nTask){
     int numToExch = mesh.numNodesToExch(nTask);
     for(int nExch=0; nExch<numToExch; nExch++){
         vec(mesh.nodesToExch(nTask,nExch)) = 0;

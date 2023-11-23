@@ -49,7 +49,7 @@ double produit_scalaire_glo(ScaVector u, ScaVector v, Mesh& mesh){
 double erreur_l2(SpMatrix& M, ScaVector v, Mesh& mesh){
     //Error
     double size = M.rows();
-    removeInterfMPI(v,mesh);
+    //removeInterfMPI(v,mesh); --> M prend déjà en compte cela
     ScaVector err = v.transpose()*M*v;
     double n_err = err(0);
 

@@ -1,7 +1,7 @@
-# Calcul scientifique en parallèle (AMS301, cours ENSTA Paris)
+# Parallel Scientific Computing (AMS301, ENSTA Paris course)
 
-Ce repo contient les codes ainsi que les rapports pour les deux projets du cours AMS301 - Calcul scientifique en parallèle donné en dernière année d'école d'ingenieur à ENSTA Paris (2023). Le travail a été réalisé par Nour El Haddad et Adrien Sardi.
+This repo contains the codes and reports for the two projects in the AMS301 - Parallel Scientific Computing course given in the final year of engineering school at ENSTA Paris (2023). The work was carried out by Adrien Sardi and Nour El Haddad.
 
-Le premier projet, "Grille structuré", a pour but de développer deux codes de résolutions de problèmes aux différences finis. D'abord avec la méthode de Jacobi puis celle de Gauss-Siedel. Ensuite les codes sont parallélisés et leur performances sont évaluées sur le cluster Cholesky - Ecole Polytechnique.
+The first project, “Structured Grid”, aims to develop two codes for solving finite-difference problems. First with the Jacobi method, then with the Gauss-Siedel method. The codes are then parallelized and their performance evaluated on the Cholesky - Ecole Polytechnique cluster.
 
-Le deuxième projet, quand à lui, a pour but de compléter et d'améliorer un code de calcul d'éléments fini en parallèle pour un problème stationnaire avec grille non structurée. D'abord en complétant une méthode de Jacobi pour la résolution du problème puis en codant une méthode de gradient conjugué. Finalement, les perfomances des différents codes sont évaluées.
+The second project aims to complete and improve a parallel finite element calculation code for a stationary problem with an unstructured grid. Firstly, by completing a Jacobi method for solving the problem, then by coding a conjugate gradient method. Finally, the performance of the different codes is evaluated.
